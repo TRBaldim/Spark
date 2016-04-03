@@ -19,11 +19,11 @@ if __name__ == "__main__":
 	fMovies = sc.textFile("hdfs://localhost:9000/tmp/labdata/sparkdata/movies.csv")
 	fRates = sc.textFile("hdfs://localhost:9000/tmp/labdata/sparkdata/ratings.csv")
 
-	rddMoviesIDs = fMovies.map(lambda lines: lines.split(";")).map(lambda vals: (vals[0], vals[1]))
+	rddMoviesIDs = fMovies.map(lambda lines: lines.split(";")).map(lambda vals: (str(vals[0]), vals[1]))
 
-	rddRatesIDs = fRates.map(lambda lines: lines.split(",")).map(lambda vals: (vals[1], vals[2])).reduceByKey(sumFloat)
+	rddRatesIDs = fRates.map(lambda lines: lines.split(",")).map(lambda vals: (str(vals[1]), vals[2])).reduceByKey(sumFloat)
 
-	rddRatesCounts = fRates.map(lambda lines: lines.split(",")).map(lambda vals: (vals[1], 1)).reduceByKey(lambda a, b: a + b)
+	rddRatesCounts = fRates.map(lambda lines: lines.split(",")).map(lambda vals: (str(vals[1]), 1)).reduceByKey(lambda a, b: a + b)
 
 	rddRateAvarage = rddRatesIDs.join(rddRatesCounts).map(divFloat)
 
