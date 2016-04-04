@@ -1,16 +1,26 @@
 from pyspark import SparkContext
 
 import sys
+import ast
 reload(sys)
 sys.setdefaultencoding("UTF-8")
+
+def rola(a, b):
+	try:
+		return float(a) + float(b)
+	except:
+		try:
+			float(str(a.unicode('utf8'))) + float(str(b.unicode('utf8')))
+		except:
+			return ast.literal_eval(a) + ast.literal_eval(b)
 
 if __name__ == "__main__":
 
 	sc = SparkContext(appName="ClimateChanges")
 
-fCities = sc.textFile("hdfs://localhost:9000/tmp/gTemp/mostNew")
+fCities = sc.textFile("hdfs://localhost:9000//tmp/gTemp/GlobalLandTemperaturesByCity.csv")
 
-rddSplitedCities = fCities.map(lambda line: line.split(",")).map(lambda vals: (vals[0], vals[1])).reduceByKey(lambda a, b: float(a) + float(b))
+rddSplitedCities = fCities.map(lambda line: line.split(",")).map(lambda vals: (vals[0], vals[1])).reduceByKey(lambda a, b: ast.literal_eval(a) + ast.literal_eval(b))
 rddYears = rddSplitedCities.map(lambda line: (line[0].split("-")[0], line[3])).reduceByKey(lambda a, b: a)
 rddCountYears = rddSplitedCities.map(lambda line: (line[0].split("-")[0], 1)).reduceByKey(lambda a, b: a + b)
 rddSumTemp = rddSplitedCities.map(lambda line: (line[0].split("-")[0], float(str(line[1])[:4]))).reduceByKey(lambda a, b: float(a) + float(b))
