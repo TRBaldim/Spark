@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
 	rddRateAvarage = rddRatesIDs.join(rddRatesCounts).map(divFloat)
 
-	rddAvarageMovies = rddMoviesIDs.join(rddRateAvarage).map(lambda k: (str(k[1][0]), k[1][1]))
+	rddAvarageMovies = rddMoviesIDs.join(rddRateAvarage).map(lambda k: (str(k[1][0].unicode('utf8')), k[1][1]))
 
 	rddAvarageMovies.cache()
 

@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
 fCities = sc.textFile("hdfs://localhost:9000//tmp/gTemp/GlobalLandTemperaturesByCity.csv")
 
-rddSplitedCities = fCities.map(lambda line: line.split(",")).map(lambda vals: (vals[0], vals[1])).reduceByKey(lambda a, b: ast.literal_eval(a) + ast.literal_eval(b))
+rddSplitedCities = fCities.map(lambda line: line.split(",")).map(lambda vals: (vals[0], vals[1])).reduceByKey(lambda a, b: a + float(b))
 rddYears = rddSplitedCities.map(lambda line: (line[0].split("-")[0], line[3])).reduceByKey(lambda a, b: a)
 rddCountYears = rddSplitedCities.map(lambda line: (line[0].split("-")[0], 1)).reduceByKey(lambda a, b: a + b)
 rddSumTemp = rddSplitedCities.map(lambda line: (line[0].split("-")[0], float(str(line[1])[:4]))).reduceByKey(lambda a, b: float(a) + float(b))
